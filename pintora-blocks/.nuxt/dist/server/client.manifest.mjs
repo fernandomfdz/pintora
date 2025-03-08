@@ -1,0 +1,1 @@
+export { default } from "file:///Users/fmeseguer/Documents/Dev/pintora/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs"

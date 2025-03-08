@@ -1,0 +1,32 @@
+{
+  "name": "pintora",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "pintora-shared",
+    "pintora-ui",
+    "pintora-blocks",
+    "pintora-main",
+    "pintora-studio",
+    "pintora-icons"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:main\" \"npm run dev:studio\" \"npm run dev:icons\" \"npm run dev:ui\" \"npm run dev:blocks\"",
+    "dev:main": "cd pintora-main && npm run dev",
+    "dev:studio": "cd pintora-studio && npm run dev",
+    "dev:icons": "cd pintora-icons && npm run dev",
+    "dev:ui": "cd pintora-ui && npm run dev",
+    "dev:blocks": "cd pintora-blocks && npm run dev",
+    "dev:shared": "cd pintora-shared && npm run dev",
+    "build": "npm run build:shared && npm run build:ui && npm run build:blocks && npm run build:main && npm run build:studio && npm run build:icons",
+    "build:shared": "cd pintora-shared && npm run build",
+    "build:ui": "cd pintora-ui && npm run build",
+    "build:blocks": "cd pintora-blocks && npm run build",
+    "build:main": "cd pintora-main && npm run build",
+    "build:studio": "cd pintora-studio && npm run build",
+    "build:icons": "cd pintora-icons && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 

@@ -1,0 +1,25 @@
+{
+  "name": "@pintora/blocks",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@pintora/shared": "0.1.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.11.0",
+    "@tailwindcss/vite": "^4.0.12",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "jsdom": "^26.0.0",
+    "nuxt": "^3.9.0",
+    "tailwindcss": "^4.0.12",
+    "typescript": "^5.3.3"
+  }
+}
