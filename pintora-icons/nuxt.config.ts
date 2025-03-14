@@ -5,7 +5,9 @@ import {fileURLToPath} from 'url';
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: [],
+  modules: [
+    '@pinia/nuxt',
+  ],
   alias: {
     "@pintora-shared/": fileURLToPath(new URL('../pintora-shared/', import.meta.url)),
   },

@@ -1,38 +1,110 @@
 <template>
-  <div>
-    <section class="py-16 bg-gradient-to-br from-primary-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-            Pintora/Icons
-          </h1>
-          <p class="text-xl text-gray-700 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-            Biblioteca para la organización y optimización de iconos SVG utilizando mask-image en CSS.
-          </p>
-          <div class="flex justify-center">
-            <a href="#" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-              Comenzar
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
+  <main class="container mx-auto">
+    <IconToolbar
+      @import="handleImport"
+      @search="handleSearch"
+      @clear="handleClear"
+      @export="handleExport"
+    />
 
-    <section class="py-16 bg-white dark:bg-gray-900">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            Próximamente
-          </h2>
-          <p class="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Estamos trabajando en la implementación de Pintora/Icons. ¡Vuelve pronto para ver nuestro progreso!
-          </p>
+    <div v-if="isImporting || isExporting" class="p-4 text-center text-muted-foreground">
+      {{ isImporting ? 'Importando iconos...' : 'Exportando iconos...' }}
+    </div>
+
+    <div v-if="iconStore.currentProject.collections.length === 0" class="p-12 text-center text-muted-foreground">
+      <p class="text-lg mb-4">No hay colecciones de iconos</p>
+      <p>Haz clic en "Import Icons" para comenzar</p>
+    </div>
+
+    <IconGrid
+      v-else
+      :icons="iconStore.currentProject.collections.flatMap(c => c.icons)"
+      :selected-icons="iconStore.currentProject.selectedIcons"
+      @select="handleIconSelect"
+    />
+
+    <div 
+      v-if="iconStore.currentProject.selectedIcons.length > 0" 
+      class="fixed bottom-0 left-0 right-0 bg-background border-t p-4"
+    >
+      <div class="container mx-auto flex items-center justify-between">
+        <p class="text-sm text-muted-foreground">
+          {{ iconStore.currentProject.selectedIcons.length }} iconos seleccionados
+        </p>
+        <div class="flex gap-2">
+          <Button variant="outline" @click="handleClear">
+            Limpiar selección
+          </Button>
+          <Button variant="default" @click="handleExport">
+            Exportar seleccionados
+          </Button>
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </main>
 </template>
 
 <script setup lang="ts">
-// Aquí puedes agregar lógica específica para la página
-</script> 
+  import { onMounted, ref } from 'vue';
+  import { useIconStore } from '@pintora-shared/stores/useIconStore';
+  import { useIconImport } from '@pintora-shared/composables/useIconImport';
+  import { useIconExport } from '@pintora-shared/composables/useIconExport';
+  import Button from '@pintora-shared/components/ui/Button.vue';
+  import IconToolbar from '@pintora-shared/components/ui/IconToolbar.vue';
+  import IconGrid from '@pintora-shared/components/ui/IconGrid.vue';
+  import ThemeToggle from '@pintora-shared/components/ui/ThemeToggle.vue';
+  import type { IconMetadata } from '@pintora-shared/types/icon';
+
+const iconStore = useIconStore()
+const { importSvgFiles, isImporting } = useIconImport()
+const { exportIcons, isExporting } = useIconExport()
+
+onMounted(() => {
+  iconStore.initializeFromStorage()
+})
+
+const handleIconSelect = (icon: IconMetadata) => {
+  iconStore.toggleIconSelection(icon)
+}
+
+const handleImport = async () => {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.multiple = true
+  input.accept = '.svg'
+  
+  input.onchange = async (e) => {
+    const files = (e.target as HTMLInputElement).files
+    if (files) {
+      const collection = await importSvgFiles(files)
+      iconStore.addCollection(collection)
+    }
+  }
+  
+  input.click()
+}
+
+const handleSearch = (query: string) => {
+  // TODO: Implementar búsqueda
+}
+
+const handleClear = () => {
+  iconStore.clearSelection()
+}
+
+const handleExport = async () => {
+  if (iconStore.currentProject.selectedIcons.length > 0) {
+    await exportIcons(iconStore.currentProject.selectedIcons)
+  }
+}
+
+useHead({
+  title: 'Pintora/Icons - Gestión de Iconos SVG',
+  meta: [
+    { name: 'description', content: 'Pintora/Icons es una biblioteca para la organización y optimización de iconos SVG utilizando mask-image en CSS.' }
+  ],
+  link: [
+    { rel: 'icon', type: 'image/png', href: '/favicon.png' }
+  ]
+})
+</script>

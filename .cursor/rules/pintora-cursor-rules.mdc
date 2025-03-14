@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description: General Guidelines
+globs: *.vue, *.js, *.ts, *.json, *.css, *.scss
 alwaysApply: false
 ---
 
@@ -32,6 +32,7 @@ UI and Styling
 - Use Shadcn Vue, Radix Vue, and Tailwind for components and styling.
 - Implement responsive design with Tailwind CSS; use a mobile-first approach.
 - Don't use Tailwind with postcss. Use the last version recomended in their documentation like the vite plugin.
+- Don't generate tailwind.config.js or ts anymore. Use tailwind's new css based config.
 
 Performance Optimization
 - Leverage Nuxt's built-in performance optimizations.

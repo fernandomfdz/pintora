@@ -30,10 +30,13 @@
   "dependencies": {
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "jszip": "^3.10.1",
+    "pinia": "^2.1.7",
     "tailwind-merge": "^2.2.1",
     "vue": "^3.3.4"
   },
   "devDependencies": {
+    "@types/jszip": "^3.4.1",
     "@types/vue": "^2.0.0",
     "@vue/compiler-sfc": "^3.3.4",
     "@vue/tsconfig": "^0.5.1",
