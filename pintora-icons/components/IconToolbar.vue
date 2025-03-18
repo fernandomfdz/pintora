@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full flex justify-between items-center gap-4 p-4">
+  <div class="flex items-center gap-4 p-4 border-b">
     <Button variant="default" @click="emit('import')">
       Import Icons
     </Button>
@@ -11,18 +11,11 @@
         @input="handleSearch"
       />
     </div>
-
-    <Button variant="outline" @click="emit('clear')">
-      Clear Selection
-    </Button>
-
-    <Button variant="default" @click="emit('export')">
-      Export Selected
-    </Button>
   </div>
 </template> 
 
 <script setup lang="ts">
+// @ts-ignore
 import Button from '@pintora-shared/components/ui/Button.vue'
 import { ref } from 'vue'
 

@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col">
     <header class="border-b">
-      <div class="container m-auto flex h-16 items-center justify-between">
+      <div class="px-6 flex h-16 items-center justify-between">
         <div class="flex items-center gap-6">
           <NuxtLink to="/" class="font-bold text-xl">Pintora Icons</NuxtLink>
           <nav class="hidden md:flex gap-6">
@@ -13,7 +13,7 @@
         </div>
       </div>
     </header>
-    <main class="self-start place-self-start justify-self-start container mx-auto py-6">
+    <main >
       <slot />
     </main>
     <footer class="mt-auto border-t py-6">

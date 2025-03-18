@@ -14,7 +14,13 @@ export const useIconImport = () => {
 
     const attributes: Record<string, string> = {}
     for (const attr of element.attributes) {
-      attributes[attr.name] = attr.value
+      const value = attr.value
+      // Reemplazar fill y stroke por currentColor
+      if (attr.name === 'fill' || attr.name === 'stroke') {
+        attributes[attr.name] = 'currentColor'
+      } else {
+        attributes[attr.name] = value
+      }
     }
 
     return {
@@ -24,7 +30,7 @@ export const useIconImport = () => {
     }
   }
 
-  const parseSvgFile = async (file: File): Promise<IconMetadata> => {
+  const parseSvgFile = async (file: File, name: string): Promise<IconMetadata> => {
     const text = await file.text()
     const parser = new DOMParser()
     const doc = parser.parseFromString(text, 'image/svg+xml')
@@ -38,24 +44,34 @@ export const useIconImport = () => {
       if (element) elements.push(element)
     }
 
+    // Asegurarnos de que el SVG tenga los atributos correctos
+    const viewBox = svg.getAttribute('viewBox') || '0 0 24 24'
+    const width = svg.getAttribute('width') ? parseInt(svg.getAttribute('width')!) : 24
+    const height = svg.getAttribute('height') ? parseInt(svg.getAttribute('height')!) : 24
+    const strokeWidth = svg.getAttribute('stroke-width')
+
     return {
       id: crypto.randomUUID(),
-      name: file.name.replace(/\.svg$/, ''),
-      viewBox: svg.getAttribute('viewBox') || undefined,
-      width: svg.getAttribute('width') ? parseInt(svg.getAttribute('width')!) : undefined,
-      height: svg.getAttribute('height') ? parseInt(svg.getAttribute('height')!) : undefined,
-      fill: svg.getAttribute('fill') || undefined,
-      stroke: svg.getAttribute('stroke') || undefined,
-      strokeWidth: svg.getAttribute('stroke-width') || undefined,
+      name,
+      viewBox,
+      width,
+      height,
+      fill: 'currentColor',
+      stroke: 'currentColor',
+      strokeWidth: strokeWidth || '2',
       elements
     }
   }
 
-  const importSvgFiles = async (files: FileList | File[]): Promise<IconCollection> => {
+  const importSvgFiles = async (files: FileList | File[], names?: string[]): Promise<IconCollection> => {
     isImporting.value = true
     
     try {
-      const icons = await Promise.all(Array.from(files).map(parseSvgFile))
+      const fileArray = Array.from(files)
+      const icons = await Promise.all(fileArray.map((file, index) => {
+        const name = names?.[index] || `icon-${Date.now()}-${index}`
+        return parseSvgFile(file, name)
+      }))
       
       return {
         id: crypto.randomUUID(),
