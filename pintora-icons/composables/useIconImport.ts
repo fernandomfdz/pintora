@@ -63,14 +63,14 @@ export const useIconImport = () => {
     }
   }
 
-  const importSvgFiles = async (files: FileList | File[], names?: string[]): Promise<IconCollection> => {
+  const importSvgFiles = async (files: FileList | (File | Blob)[], names?: string[]): Promise<IconCollection> => {
     isImporting.value = true
     
     try {
       const fileArray = Array.from(files)
       const icons = await Promise.all(fileArray.map((file, index) => {
         const name = names?.[index] || `icon-${Date.now()}-${index}`
-        return parseSvgFile(file, name)
+        return parseSvgFile(file as File, name)
       }))
       
       return {

@@ -11,10 +11,45 @@ export default defineNuxtConfig({
   alias: {
     "@pintora-shared/": fileURLToPath(new URL('../pintora-shared/', import.meta.url)),
   },
+  nitro: {
+    moduleSideEffects: ['svgicons2svgfont'],
+    externals: {
+      inline: ['svgicons2svgfont']
+    }
+  },
   vite: {
     plugins: [
       tailwindcss(),
     ],
+    optimizeDeps: {
+      include: [
+        'svgicons2svgfont',
+        'ttf2woff2',
+        'opentype.js',
+        'svg2ttf',
+        'jszip',
+        'buffer'
+      ],
+      exclude: ['stream']
+    },
+    build: {
+      rollupOptions: {
+        external: ['stream'],
+        output: {
+          format: 'es',
+          inlineDynamicImports: true
+        }
+      },
+      commonjsOptions: {
+        include: [/node_modules/],
+        transformMixedEsModules: true,
+        defaultIsModuleExports: true
+      }
+    },
+    define: {
+      'process.env.NODE_DEBUG': 'false',
+      'global': 'globalThis'
+    }
   },
   css: ['~/assets/css/tailwind.css'],
 

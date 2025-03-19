@@ -75,7 +75,7 @@ import type { IconMetadata } from '@/types/icon'
 
 const props = defineProps<{
   icons: IconMetadata[]
-  selectedIcons: string[]
+  selectedIcons: IconMetadata[]
 }>()
 
 const emit = defineEmits<{

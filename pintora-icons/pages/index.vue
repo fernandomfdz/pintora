@@ -1,7 +1,7 @@
 <template>
   <main class="min-h-screen flex flex-col">
     <!-- Barra de herramientas superior -->
-    <div class="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div class="z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <IconToolbar
         @import="handleImport"
         @search="handleSearch"
@@ -15,8 +15,23 @@
       <!-- Estado de carga -->
       <div v-if="isImporting || isExporting" class="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur z-50">
         <div class="flex flex-col items-center gap-4 p-8 rounded-lg bg-card border shadow-lg">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <p class="text-muted-foreground">{{ isImporting ? 'Importando iconos...' : 'Exportando iconos...' }}</p>
+          <div v-if="!exportError" class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div v-else class="flex items-center justify-center h-8 w-8 rounded-full bg-destructive text-destructive-foreground">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"/>
+              <path d="m6 6 12 12"/>
+            </svg>
+          </div>
+          <div class="flex flex-col items-center gap-2">
+            <p v-if="!exportError" class="text-muted-foreground">
+              {{ isImporting ? 'Importando iconos...' : exportProgress?.step || 'Exportando iconos...' }}
+              {{ exportProgress ? `(${exportProgress.value}%)` : '' }}
+            </p>
+            <template v-else>
+              <p class="text-destructive font-medium">Error en {{ exportError.context }}</p>
+              <p class="text-sm text-muted-foreground text-center">{{ exportError.message }}</p>
+            </template>
+          </div>
         </div>
       </div>
 
@@ -90,10 +105,7 @@
           {{ iconStore.currentProject.selectedIcons.length }} iconos seleccionados
         </p>
         <div class="flex gap-2">
-          <Button variant="outline" @click="handleClear">
-            Limpiar selección
-          </Button>
-          <Button variant="default" @click="handleExport">
+          <Button variant="default" @click="handleExport('svg')">
             Exportar seleccionados
           </Button>
         </div>
@@ -127,7 +139,7 @@ import { useIconExport } from '@/composables/useIconExport'
 // @ts-ignore
 import Button from '@pintora-shared/components/ui/Button.vue'
 // @ts-ignore
-import IconToolbar from '@pintora-shared/components/ui/IconToolbar.vue'
+import IconToolbar from '@/components/IconToolbar.vue'
 import IconGrid from '@/components/IconGrid.vue'
 import CssPreview from '@/components/CssPreview.vue'
 import IconEditDialog from '@/components/IconEditDialog.vue'
@@ -138,7 +150,7 @@ import type { IconMetadata } from '@/types/icon'
 
 const iconStore = useIconStore()
 const { importSvgFiles, isImporting } = useIconImport()
-const { exportIcons, isExporting } = useIconExport()
+const { exportAsSvg, exportAsFont, isExporting, exportProgress, exportError } = useIconExport()
 
 // Estado para el diálogo de edición
 const showEditDialog = ref(false)
@@ -328,10 +340,17 @@ const handleSearch = (query: string) => {
 const handleClear = () => {
   iconStore.clearSelection()
 }
-
-const handleExport = async () => {
+const handleExport = async (type: 'svg' | 'font') => {
   if (iconStore.currentProject.selectedIcons.length > 0) {
-    await exportIcons(iconStore.currentProject.selectedIcons)
+    try {
+      if (type === 'svg') {
+        await exportAsSvg(iconStore.currentProject.selectedIcons)
+      } else {
+        await exportAsFont(iconStore.currentProject.selectedIcons)
+      }
+    } catch (error) {
+      console.error('Error al exportar:', error)
+    }
   }
 }
 
