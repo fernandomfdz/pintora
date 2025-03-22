@@ -222,9 +222,19 @@ const generateRandomName = () => {
   editingIcon.value.name = generateRandomIconName()
 }
 
-const handleExport = (type: 'svg' | 'font') => {
-  if (type === 'svg') {
-    showCssPreview.value = true
+const { exportAsFont, exportAsSvg } = useIconExport()
+
+const handleExport = async (type: 'svg' | 'font') => {
+  if (!library.value?.icons) return
+
+  try {
+    if (type === 'svg') {
+      await exportAsSvg(library.value.icons)
+    } else if (type === 'font') {
+      await exportAsFont(library.value.icons)
+    }
+  } catch (error) {
+    console.error('Error al exportar:', error)
   }
 }
 

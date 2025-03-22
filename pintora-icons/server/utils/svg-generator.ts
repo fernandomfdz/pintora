@@ -1,4 +1,4 @@
-import { SVGIcons2SVGFontStream } from 'svgicons2svgfont'
+import SVGIcons2SVGFontStream from 'svgicons2svgfont'
 import { Readable } from 'stream'
 import type { IconMetadata } from '@/types/icon'
 
