@@ -5,6 +5,11 @@
     "paths": {
       "@/*": ["./*"],
       "@pintora-shared/": ["../pintora-shared/*"]
-    }
-  }
+    },
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.vue",
+    "./tests/**/*.ts"
+  ]
 }

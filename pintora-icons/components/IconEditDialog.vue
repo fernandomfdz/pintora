@@ -44,15 +44,26 @@
         </div>
 
         <div class="flex justify-end gap-2 mt-6">
-          <Button variant="outline" @click="close">
+          <button 
+            class="px-4 py-2 rounded-md border bg-background hover:bg-accent hover:text-accent-foreground"
+            @click="close"
+          >
             Cancelar
-          </Button>
-          <Button variant="outline" @click="useRandomName" v-if="!isEditing">
+          </button>
+          <button 
+            v-if="!isEditing"
+            class="px-4 py-2 rounded-md border bg-background hover:bg-accent hover:text-accent-foreground"
+            @click="useRandomName"
+          >
             Usar nombre aleatorio
-          </Button>
-          <Button @click="confirm" :disabled="!isValid">
+          </button>
+          <button 
+            class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+            @click="confirm"
+            :disabled="!isValid"
+          >
             {{ isEditing ? 'Guardar cambios' : 'Guardar' }}
-          </Button>
+          </button>
         </div>
       </div>
     </div>
@@ -61,14 +72,15 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import Button from '@pintora-shared/components/ui/Button.vue'
 import type { IconMetadata } from '@/types/icon'
 
-const props = defineProps<{
+interface Props {
   isOpen: boolean
-  icon?: IconMetadata
-  svgText?: string
-}>()
+  icon: IconMetadata | null
+  svgText: string
+}
+
+const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'close'): void
@@ -77,9 +89,9 @@ const emit = defineEmits<{
 }>()
 
 const isEditing = computed(() => !!props.icon)
-const localName = ref('')
-const localSvg = ref('')
-const previewSvg = ref('')
+const localName = ref(props.icon?.name || '')
+const localSvg = ref(props.svgText || '')
+const previewSvg = ref(props.svgText || '')
 const isValid = ref(true)
 
 watch(() => props.isOpen, (newValue) => {

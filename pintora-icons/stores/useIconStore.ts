@@ -166,4 +166,4 @@ export const useIconStore = defineStore('icons', () => {
     generateSvgString,
     searchIcons
   }
-}) 
+}, { persist: true }) 

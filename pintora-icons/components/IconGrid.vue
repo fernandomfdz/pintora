@@ -20,9 +20,9 @@
     <div
       v-for="icon in icons"
       :key="icon.id"
-      :ref="el => iconRefs[icon.id] = el"
+      :ref="(el, refs) => { if (el) iconRefs[icon.id] = el as HTMLElement }"
       class="group relative aspect-square flex flex-col items-center justify-center gap-2 p-4 rounded-lg border bg-card hover:bg-accent/10 transition-colors"
-      :class="{ 'ring-2 ring-primary': selectedIcons.filter((f:any) => f.id === icon.id).length > 0 }"
+      :class="{ 'ring-2 ring-primary': selectedIcons.filter((f) => f.id === icon.id).length > 0 }"
       @click="$emit('select', icon)"
     >
       <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -86,7 +86,7 @@ const emit = defineEmits<{
 }>()
 
 // Referencias a los elementos del grid
-const iconRefs = ref<Record<string, HTMLElement | null>>({})
+const iconRefs = ref<Record<string, HTMLElement>>({})
 
 // Estado de selección
 const isSelecting = ref(false)
@@ -169,7 +169,7 @@ const generateSvgString = (icon: IconMetadata): string => {
     xmlns: 'http://www.w3.org/2000/svg',
     width: '100%',
     height: '100%',
-    viewBox: icon.viewBox,
+    viewBox: icon.viewBox || '0 0 24 24',
     fill: 'none',
     stroke: 'currentColor',
     'stroke-width': icon.strokeWidth || '2'
@@ -180,7 +180,7 @@ const generateSvgString = (icon: IconMetadata): string => {
     .join(' ')
 
   const elementsString = icon.elements
-    .map(element => {
+    ?.map(element => {
       const attrs = Object.entries(element.attributes)
         .map(([key, value]) => `${key}="${value}"`)
         .join(' ')
@@ -190,7 +190,7 @@ const generateSvgString = (icon: IconMetadata): string => {
       }
       return `<${element.type} ${attrs}/>`
     })
-    .join('\n  ')
+    .join('\n  ') || ''
 
   return `<svg ${svgAttrsString}>\n  ${elementsString}\n</svg>`
 }

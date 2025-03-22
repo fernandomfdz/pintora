@@ -1,13 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from 'nuxt/config'
 import tailwindcss from "@tailwindcss/vite";
-import {fileURLToPath} from 'url';
+import { fileURLToPath } from 'url';
+import path from 'path'
+import fs from 'fs'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: [
-    '@pinia/nuxt',
-  ],
+  modules: ['@pinia/nuxt', '@nuxtjs/supabase'],
   alias: {
     "@pintora-shared/": fileURLToPath(new URL('../pintora-shared/', import.meta.url)),
   },
@@ -24,7 +24,6 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: [
         'svgicons2svgfont',
-        'ttf2woff2',
         'opentype.js',
         'svg2ttf',
         'jszip',
@@ -54,4 +53,17 @@ export default defineNuxtConfig({
   css: ['~/assets/css/tailwind.css'],
 
   compatibilityDate: '2025-03-07',
+
+  supabase: {
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_ANON_KEY,
+    // Opciones del módulo
+    redirectOptions: {
+      login: '/auth/login',
+      callback: '/auth/confirm',
+      include: ['/app/*'],
+      exclude: ['/profile/*'],
+      cookieRedirect: true,
+    }
+  },
 })

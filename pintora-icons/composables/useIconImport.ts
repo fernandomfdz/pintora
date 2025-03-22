@@ -85,6 +85,7 @@ export const useIconImport = () => {
 
   return {
     importSvgFiles,
-    isImporting
+    isImporting,
+    parseSvgFile
   }
 } 

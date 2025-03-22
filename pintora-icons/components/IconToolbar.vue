@@ -1,8 +1,11 @@
 <template>
   <div class="flex items-center gap-4 p-4 border-b">
-    <Button variant="default" @click="emit('import')">
+    <button 
+      class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+      @click="emit('import')"
+    >
       Import Icons
-    </Button>
+    </button>
     
     <div class="flex-1">
       <input
@@ -13,12 +16,15 @@
     </div>
 
     <div class="relative">
-      <Button variant="default" @click="showExportMenu = !showExportMenu">
+      <button 
+        class="px-4 py-2 rounded-md border bg-background hover:bg-accent hover:text-accent-foreground flex items-center"
+        @click="showExportMenu = !showExportMenu"
+      >
         Descargar
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2">
           <path d="m6 9 6 6 6-6"/>
         </svg>
-      </Button>
+      </button>
 
       <div
         v-if="showExportMenu"
@@ -44,8 +50,6 @@
 </template> 
 
 <script setup lang="ts">
-// @ts-ignore
-import Button from '@pintora-shared/components/ui/Button.vue'
 import { ref, onUnmounted, onMounted } from 'vue'
 
 const searchQuery = ref('')
