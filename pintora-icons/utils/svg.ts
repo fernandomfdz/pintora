@@ -17,17 +17,14 @@ export const parseSvgFromClipboard = async (event: ClipboardEvent): Promise<SvgD
     const svg = doc.querySelector('svg')
     if (!svg) return null
 
+    svg.removeAttribute('class')
+    svg.setAttribute('width', '100%')
+    svg.setAttribute('height', '100%')
+
     // Obtener atributos
     const viewBox = svg.getAttribute('viewBox') || '0 0 24 24'
     const width = svg.getAttribute('width') || undefined
     const height = svg.getAttribute('height') || undefined
-
-    // Limpiar el SVG
-    const elements = [svg, ...Array.from(svg.getElementsByTagName('*'))]
-    elements.forEach(el => {
-      if (el.hasAttribute('fill')) el.setAttribute('fill', 'currentColor')
-      if (el.hasAttribute('stroke')) el.setAttribute('stroke', 'currentColor')
-    })
 
     return {
       svg: svg.outerHTML,

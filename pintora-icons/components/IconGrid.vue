@@ -59,8 +59,8 @@
         </button>
       </div>
 
-      <div class="size-12 flex items-center justify-center bg-muted/30 rounded">
-        <div class="size-8" v-html="generateSvgString(icon)"></div>
+      <div class="size-12 flex items-center justify-center rounded">
+        <div class="size-8" v-html="icon.svg"></div>
       </div>
       <span class="text-xs text-center truncate w-full" :title="icon.name">
         {{ icon.name }}
@@ -71,18 +71,18 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import type { IconMetadata } from '@/types/icon'
+import type { Icon } from '@/types/icon'
 
 const props = defineProps<{
-  icons: IconMetadata[]
-  selectedIcons: IconMetadata[]
+  icons: Icon[]
+  selectedIcons: Icon[]
 }>()
 
 const emit = defineEmits<{
-  (e: 'select', icon: IconMetadata): void
-  (e: 'edit', icon: IconMetadata): void
-  (e: 'clone', icon: IconMetadata): void
-  (e: 'remove', icon: IconMetadata): void
+  (e: 'select', icon: Icon): void
+  (e: 'edit', icon: Icon): void
+  (e: 'clone', icon: Icon): void
+  (e: 'remove', icon: Icon): void
 }>()
 
 // Referencias a los elementos del grid

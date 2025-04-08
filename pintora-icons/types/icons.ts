@@ -4,14 +4,6 @@ export interface Icon {
   id: string
   name: string
   svg: string
-  width: string
-  height: string
-  viewBox?: string
-  fill?: string
-  stroke?: string
-  strokeWidth?: string
-  elements?: SvgElement[]
-  tags?: string[]
 }
 
 export interface CssSettings {

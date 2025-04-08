@@ -21,15 +21,16 @@ export interface IconMetadata {
   tags?: string[]
 }
 
-export interface Icon extends IconMetadata {
+export interface Icon {
+  id: string
+  name: string
   svg: string
-  viewBox: string
 }
 
 export interface IconCollection {
   id: string
   name: string
-  icons: IconMetadata[]
+  icons: Icon[]
 }
 
 export interface IconLibrary {
@@ -45,4 +46,13 @@ export interface IconLibrary {
     id: string
     name: string
   }
+}
+
+export interface IconPreview {
+  id: string
+  name: string
+  svg: string
+  viewBox?: string
+  width?: string
+  height?: string
 } 

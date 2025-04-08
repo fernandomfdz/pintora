@@ -58,11 +58,14 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { IconMetadata } from '@/types/icon'
+import type { Icon } from '@/types/icon'
 import type { Theme } from '@/utils/shiki'
 import { getSystemTheme } from '@/utils/shiki'
 import CssSettingsModal from './CssSettingsModal.vue'
 import ShikiPreview from './ShikiPreview.vue'
+import { useThemeStore } from '@/stores/useThemeStore'
+
+const themeStore = useThemeStore()
 
 interface CssSettings {
   componentName: string
@@ -72,7 +75,7 @@ interface CssSettings {
 }
 
 const props = defineProps<{
-  icons: IconMetadata[]
+  icons: Icon[]
   size?: number
 }>()
 
@@ -89,6 +92,12 @@ const settings = ref<CssSettings>({
   showLineNumbers: true,
   theme: getSystemTheme()
 })
+
+themeStore.$subscribe((mutation, state) => {
+  settings.value.theme = state.theme as Theme
+  console.log('theme', settings.value.theme)
+})
+
 
 const handleSettingsUpdate = (newSettings: CssSettings) => {
   settings.value = newSettings
@@ -109,9 +118,9 @@ ${settings.value.componentName} {
 ${generateIconCss(props.icons)}`
 })
 
-const generateIconCss = (icons: IconMetadata[]): string => {
+const generateIconCss = (icons: Icon[]): string => {
   return icons.map(icon => {
-    const svgString = generateSvgString(icon)
+    const svgString = icon.svg
     const encodedSvg = encodeURIComponent(svgString)
       .replace(/'/g, '%27')
       .replace(/"/g, '%22')
@@ -124,37 +133,6 @@ ${settings.value.componentName}-${icon.name} {
   background-size: contain;
 }`
   }).join('\n\n')
-}
-
-const generateSvgString = (icon: IconMetadata): string => {
-  const svgAttrs = {
-    xmlns: 'http://www.w3.org/2000/svg',
-    width: '100%',
-    height: '100%',
-    viewBox: icon.viewBox,
-    fill: 'none',
-    stroke: 'currentColor',
-    'stroke-width': icon.strokeWidth || '2'
-  }
-
-  const svgAttrsString = Object.entries(svgAttrs)
-    .map(([key, value]) => `${key}="${value}"`)
-    .join(' ')
-
-  const elementsString = icon.elements
-    .map(element => {
-      const attrs = Object.entries(element.attributes)
-        .map(([key, value]) => `${key}="${value}"`)
-        .join(' ')
-      
-      if (element.content) {
-        return `<${element.type} ${attrs}>${element.content}</${element.type}>`
-      }
-      return `<${element.type} ${attrs}/>`
-    })
-    .join('\n  ')
-
-  return `<svg ${svgAttrsString}>\n  ${elementsString}\n</svg>`
 }
 
 const copyToClipboard = async () => {

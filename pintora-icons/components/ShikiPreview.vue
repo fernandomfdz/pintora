@@ -22,12 +22,13 @@ const props = defineProps<{
   showLineNumbers?: boolean
 }>()
 
+const theme = defineModel<Theme>('theme', { required: true })
 // Estado
 const codeContainer = ref<HTMLElement | null>(null)
 const highlightedCode = ref('')
 
 // Computed
-const effectiveTheme = computed(() => props.theme || getSystemTheme())
+const effectiveTheme = computed(() => theme.value || getSystemTheme())
 const effectiveLang = computed(() => props.lang || 'css')
 
 // Inicializar Shiki
@@ -57,7 +58,7 @@ const addLineNumbers = (html: string): string => {
 
 // Watchers
 watch(() => props.code, updateHighlightedCode)
-watch(() => props.theme, updateHighlightedCode)
+watch(() => theme.value, updateHighlightedCode)
 
 // Lifecycle
 onMounted(() => {

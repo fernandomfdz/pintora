@@ -28,12 +28,12 @@
 </template>
 
 <script setup lang="ts">
-import type { IconMetadata } from '@/types/icon'
+import type { Icon } from '@/types/icon'
 import CssPreview from './CssPreview.vue'
 
 defineProps<{
   isOpen: boolean
-  icons: IconMetadata[]
+  icons: Icon[]
 }>()
 
 defineEmits<{

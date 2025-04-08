@@ -3,15 +3,15 @@ import ttf2woff2 from 'ttf2woff2'
 import * as opentype from 'opentype.js'
 import svg2ttf from 'svg2ttf'
 import JSZip from 'jszip'
-import type { IconMetadata } from '@/types/icon'
-import { generateSvgFont } from '@/server/utils/svg-generator'
+import type { Icon } from '@/types/icon'
+import { generateSvgFont } from '@/server/utils/svg-to-font'
 import { SVGIcons2SVGFontStream } from 'svgicons2svgfont'
 import { Readable } from 'stream'
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    const { icons, format } = body as { icons: IconMetadata[], format: 'svg' | 'font' }
+    const { icons, format } = body as { icons: Icon[], format: 'svg' | 'font' }
 
     // Transformar los iconos al formato esperado por generateSvgFont
     const preparedIcons = icons.map(icon => ({

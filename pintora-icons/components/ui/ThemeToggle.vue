@@ -44,18 +44,22 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useThemeStore } from '@/stores/useThemeStore'
 
+const themeStore = useThemeStore()
 const theme = ref<'light' | 'dark'>('light')
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
   document.documentElement.classList.toggle('dark')
+  themeStore.setTheme(theme.value === 'light' ? 'github-light': 'github-dark')
 }
 
 onMounted(() => {
   // Detectar tema del sistema
   if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
     theme.value = 'dark'
+    themeStore.setTheme('github-dark')
     document.documentElement.classList.add('dark')
   }
 })
