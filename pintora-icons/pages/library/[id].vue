@@ -1,91 +1,123 @@
 <template>
-  <div 
-    class="container mx-auto py-6"
-    @dragenter.prevent="handleDragEnter"
-    @dragleave.prevent="handleDragLeave"
-    @dragover.prevent
-  >
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h1 class="text-2xl font-bold">{{ library?.name }}</h1>
-        <p class="text-sm text-muted-foreground">{{ library?.icons?.length || 0 }} iconos</p>
+  <NuxtLayout name="default">
+    <template #title>
+      {{ library?.name }}
+      <p class="text-sm text-muted-foreground">{{ library?.icons?.length || 0 }} iconos</p>
+    </template>
+    <template #buttons>
+      <button 
+        class="px-4 py-2 rounded-md border bg-background hover:bg-accent hover:text-accent-foreground flex items-center"
+        @click="showImportDialog = true"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+      </button>
+      <button 
+        class="px-4 py-2 rounded-md border bg-background hover:bg-accent hover:text-accent-foreground flex items-center"
+        @click="showCssPreview = true"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+        </svg>
+      </button>
+      <div class="relative">
+        <button 
+          class="px-4 py-2 rounded-md border bg-background hover:bg-accent hover:text-accent-foreground flex items-center"
+          @click="showExportMenu = !showExportMenu"
+        >
+          Descargar
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </button>
+
+        <div
+          v-if="showExportMenu"
+          class="absolute right-0 mt-2 w-48 bg-card rounded-md border shadow-lg z-50"
+        >
+          <div class="py-1">
+            <button
+              class="w-full px-4 py-2 text-left hover:bg-accent"
+              @click="handleExport('svg')"
+            >
+              Exportar como CSS/SVG
+            </button>
+            <button
+              class="w-full px-4 py-2 text-left hover:bg-accent"
+              @click="handleExport('font')"
+            >
+              Exportar como Fuente
+            </button>
+            <button
+              class="w-full px-4 py-2 text-left hover:bg-accent border-t"
+              @click="handleExport('font-beta')"
+            >
+              Exportar como Fuente (Beta)
+            </button>
+          </div>
+        </div>
       </div>
-      <NuxtLink 
-        to="/libraries"
-        class="px-4 py-2 rounded-md border bg-background hover:bg-accent hover:text-accent-foreground"
-      >
-        Volver a librerías
-      </NuxtLink>
-    </div>
-
-    <IconToolbar
-      @import="showImportDialog = true"
-      @search="handleSearch"
-      @export="handleExport"
-    />
-
-    <div class="flex h-[calc(100vh-200px)]">
-      <!-- Panel izquierdo con el grid -->
+    </template>
+    <template #default>
       <div 
-        class="overflow-auto"
-        :style="{ width: `${leftPanelWidth}%` }"
+        class="container mx-auto py-6"
+        @dragenter.prevent="handleDragEnter"
+        @dragleave.prevent="handleDragLeave"
+        @dragover.prevent
       >
-        <IconGrid
-          :icons="gridIcons"
-          :selected-icons="selectedIcons"
-          @select="handleIconSelect"
-          @edit="handleIconEdit"
-          @clone="handleIconClone"
-          @remove="handleIconRemove"
+
+        <IconToolbar
+          @import="showImportDialog = true"
+          @search="handleSearch"
+          @export="handleExport"
         />
-      </div>
 
-      <!-- Divisor arrastrable -->
-      <div
-        class="w-[2px] bg-border hover:bg-accent cursor-col-resize transition-all select-none touch-none"
-        @mousedown="startResize"
-        @touchstart.prevent="startResize"
-      ></div>
+        <div class="flex w-full">
+          <!-- Panel izquierdo con el grid -->
+          <div 
+            class="overflow-auto flex-1"
+          >
+            <IconGrid
+              :icons="gridIcons"
+              :selected-icons="selectedIcons"
+              @select="handleIconSelect"
+              @edit="handleIconEdit"
+              @clone="handleIconClone"
+              @remove="handleIconRemove"
+            />
+          </div>
+        </div>
 
-      <!-- Panel derecho con la vista previa CSS -->
-      <div 
-        class="overflow-auto"
-        :style="{ width: `${100 - leftPanelWidth}%` }"
-      >
-        <CssPreview
+        <IconImportDialog
+          v-if="showImportDialog"
+          ref="importDialogRef"
+          :is-open="showImportDialog"
+          @close="showImportDialog = false"
+          @confirm="handleIconsImport"
+        />
+
+        <IconEditDialog
+          v-if="showEditDialog"
+          :is-open="showEditDialog"
+          :icon="editingIcon"
+          :svg-text="editingSvgText"
+          @close="closeEditDialog"
+          @confirm="handleIconUpdate"
+          @random-name="generateRandomName"
+        />
+
+        <CssPreviewModal
+          v-if="showCssPreview"
+          :is-open="showCssPreview"
           :icons="library?.icons || []"
-          :size="800"
+          :css-settings="library?.css_settings"
+          @close="showCssPreview = false"
+          @update:css-settings="handleCssSettingsUpdate"
         />
       </div>
-    </div>
-
-    <IconImportDialog
-      v-if="showImportDialog"
-      ref="importDialogRef"
-      :is-open="showImportDialog"
-      @close="showImportDialog = false"
-      @confirm="handleIconsImport"
-    />
-
-    <IconEditDialog
-      v-if="showEditDialog"
-      :is-open="showEditDialog"
-      :icon="editingIcon"
-      :svg-text="editingSvgText"
-      @close="closeEditDialog"
-      @confirm="handleIconUpdate"
-      @random-name="generateRandomName"
-    />
-
-    <CssPreviewModal
-      v-if="showCssPreview"
-      :is-open="showCssPreview"
-      :icons="library?.icons || []"
-      :css-settings="library?.css_settings"
-      @close="showCssPreview = false"
-      @update:css-settings="handleCssSettingsUpdate"
-    />
-  </div>
+    </template>
+  </NuxtLayout>
 </template>
 
 <script setup lang="ts">
@@ -95,15 +127,23 @@ import { useIconLibraries } from '@/composables/useIconLibraries'
 import { useIconExport } from '@/composables/useIconExport'
 import { useIconImport } from '@/composables/useIconImport'
 import type { IconMetadata, Icon, IconLibrary, IconPreview } from '@/types/icon'
-import { generateRandomIconName } from '@/utils/icons'
+import { generateRandomIconName, generateSvgString } from '@/utils/icons'
 import { parseSvgFromClipboard } from '@/utils/svg'
 
 const route = useRoute()
 const libraryId = route.params.id as string
 
+const showExportMenu = ref(false)
+
 const { getLibrary, updateLibrary } = useIconLibraries()
-const { exportAsFont, exportAsSvg } = useIconExport()
+const { exportAsFont, exportAsSvg, exportAsFontBeta } = useIconExport()
 const { importSvgFiles, parseSvgFile } = useIconImport()
+
+
+definePageMeta({
+  title: 'Librería',
+  layout: false
+})
 
 const library = ref<IconLibrary | null>(null)
 const selectedIcons = ref<IconMetadata[]>([])
@@ -113,8 +153,6 @@ const showCssPreview = ref(false)
 const editingIcon = ref<IconMetadata | null>(null)
 const editingSvgText = ref('')
 const searchQuery = ref('')
-const leftPanelWidth = ref(50)
-const isResizing = ref(false)
 let startX = 0
 let startWidth = 0
 const importDialogRef = ref<{ addPastedIcon: (svgData: { svg: string, viewBox: string, width?: string, height?: string }) => Promise<void> } | null>(null)
@@ -264,17 +302,19 @@ const generateRandomName = () => {
   editingIcon.value.name = generateRandomIconName()
 }
 
-const handleExport = async (type: 'svg' | 'font') => {
-  if (!library.value?.icons) return
+const handleExport = async (type: 'svg' | 'font' | 'font-beta') => {
+  if (!selectedIcons.value) return
 
   try {
     if (type === 'svg') {
-      await exportAsSvg(library.value.icons)
+      await exportAsSvg(selectedIcons.value)
     } else if (type === 'font') {
-      await exportAsFont(library.value.icons)
+      await exportAsFont(selectedIcons.value)
+    } else if (type === 'font-beta') {
+      await exportAsFontBeta(selectedIcons.value)
     }
   } catch (error) {
-    console.error('Error al exportar:', error)
+    console.error('Error exportando iconos:', error)
   }
 }
 
@@ -372,61 +412,6 @@ const handlePaste = async (event: ClipboardEvent) => {
   }
 }
 
-// Funcionalidad del divisor arrastrable
-const startResize = (event: MouseEvent | TouchEvent) => {
-  isResizing.value = true
-  startX = 'touches' in event ? event.touches[0].pageX : event.pageX
-  startWidth = leftPanelWidth.value
-
-  // Prevenir selección de texto durante el arrastre
-  document.body.style.userSelect = 'none'
-  document.body.style.cursor = 'col-resize'
-
-  // Añadir eventos para arrastre y finalización
-  document.addEventListener('mousemove', handleResize)
-  document.addEventListener('mouseup', stopResize)
-  document.addEventListener('touchmove', handleResize)
-  document.addEventListener('touchend', stopResize)
-}
-
-const handleResize = (event: MouseEvent | TouchEvent) => {
-  if (!isResizing.value) return
-
-  // Obtener la posición actual del cursor/touch
-  const currentX = 'touches' in event ? event.touches[0].pageX : event.pageX
-  const deltaX = currentX - startX
-
-  // Calcular el nuevo ancho como porcentaje del contenedor
-  const containerWidth = window.innerWidth
-  const deltaPercentage = (deltaX / containerWidth) * 100
-  let newWidth = startWidth + deltaPercentage
-
-  // Limitar el ancho entre 20% y 80%
-  newWidth = Math.max(20, Math.min(80, newWidth))
-  
-  // Actualizar el ancho del panel
-  leftPanelWidth.value = newWidth
-
-  // Prevenir eventos por defecto para evitar problemas
-  event.preventDefault()
-}
-
-const stopResize = () => {
-  isResizing.value = false
-  startX = 0
-  startWidth = 0
-
-  // Restaurar estilos del documento
-  document.body.style.userSelect = ''
-  document.body.style.cursor = ''
-
-  // Limpiar event listeners
-  document.removeEventListener('mousemove', handleResize)
-  document.removeEventListener('mouseup', stopResize)
-  document.removeEventListener('touchmove', handleResize)
-  document.removeEventListener('touchend', stopResize)
-}
-
 // Manejar entrada de arrastre
 const handleDragEnter = (event: DragEvent) => {
   event.preventDefault()
@@ -457,6 +442,7 @@ const handleDragLeave = (event: DragEvent) => {
 
 // Escuchar eventos de pegado
 onMounted(() => {
+   document.addEventListener('click', handleClickOutside)
   if (!showImportDialog.value) {
     document.addEventListener('paste', handlePaste)
   }
@@ -464,10 +450,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
   document.removeEventListener('paste', handlePaste)
-  if (isResizing.value) {
-    stopResize()
-  }
   dragCounter = 0
   isDraggingOverWindow.value = false
 })
@@ -479,6 +463,16 @@ watch(() => showImportDialog.value, (newValue) => {
     document.addEventListener('paste', handlePaste)
   }
 })
+
+// Cerrar el menú al hacer clic fuera
+const handleClickOutside = (event: MouseEvent) => {
+  if (showExportMenu.value) {
+    const target = event.target as HTMLElement
+    if (!target.closest('.relative')) {
+      showExportMenu.value = false
+    }
+  }
+}
 </script>
 
 <style scoped>

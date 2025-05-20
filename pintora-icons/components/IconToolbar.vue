@@ -1,91 +1,27 @@
 <template>
-  <div class="flex items-center gap-4 p-4 border-b">
-    <button 
-      class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
-      @click="emit('import')"
-    >
-      Import Icons
-    </button>
+  <div class="flex items-center gap-4 p-4">
     
     <div class="flex-1">
       <input
         v-model="searchQuery"
         placeholder="Search icons..."
+         class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
         @input="handleSearch"
       />
-    </div>
-
-    <div class="relative">
-      <button 
-        class="px-4 py-2 rounded-md border bg-background hover:bg-accent hover:text-accent-foreground flex items-center"
-        @click="showExportMenu = !showExportMenu"
-      >
-        Descargar
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2">
-          <path d="m6 9 6 6 6-6"/>
-        </svg>
-      </button>
-
-      <div
-        v-if="showExportMenu"
-        class="absolute right-0 mt-2 w-48 bg-card rounded-md border shadow-lg z-50"
-      >
-        <div class="py-1">
-          <button
-            class="w-full px-4 py-2 text-left hover:bg-accent"
-            @click="handleExportClick('svg')"
-          >
-            Exportar como CSS/SVG
-          </button>
-          <button
-            class="w-full px-4 py-2 text-left hover:bg-accent"
-            @click="handleExportClick('font')"
-          >
-            Exportar como Fuente
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 </template> 
 
 <script setup lang="ts">
-import { ref, onUnmounted, onMounted } from 'vue'
+import { ref } from 'vue'
 
 const searchQuery = ref('')
-const showExportMenu = ref(false)
 
 const emit = defineEmits<{
-  (e: 'import'): void
   (e: 'search', query: string): void
-  (e: 'clear'): void
-  (e: 'export', type: 'svg' | 'font'): void
 }>()
 
 const handleSearch = () => {
   emit('search', searchQuery.value)
 }
-
-const handleExportClick = (type: 'svg' | 'font') => {
-  showExportMenu.value = false
-  emit('export', type)
-}
-
-// Cerrar el menú al hacer clic fuera
-const handleClickOutside = (event: MouseEvent) => {
-  if (showExportMenu.value) {
-    const target = event.target as HTMLElement
-    if (!target.closest('.relative')) {
-      showExportMenu.value = false
-    }
-  }
-}
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
 </script>

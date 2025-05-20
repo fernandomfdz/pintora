@@ -9,10 +9,8 @@ const authStore = useAuthStore()
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
-    <p class="mb-4">Bienvenido, {{ authStore.user?.email }}</p>
-    
+  <div class="flex-1 bg-gray-100 p-8">
+    <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div class="p-6 bg-white rounded-lg shadow-md">
         <h2 class="text-xl font-semibold mb-2">Mis Organizaciones</h2>
@@ -24,7 +22,6 @@ const authStore = useAuthStore()
           Ver organizaciones
         </NuxtLink>
       </div>
-      
       <div class="p-6 bg-white rounded-lg shadow-md">
         <h2 class="text-xl font-semibold mb-2">Mis Bibliotecas</h2>
         <p class="text-gray-600">Administra tus bibliotecas de iconos</p>
@@ -35,7 +32,6 @@ const authStore = useAuthStore()
           Ver bibliotecas
         </NuxtLink>
       </div>
-      
       <div class="p-6 bg-white rounded-lg shadow-md">
         <h2 class="text-xl font-semibold mb-2">Mi Perfil</h2>
         <p class="text-gray-600">Actualiza tu información personal</p>

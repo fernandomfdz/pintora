@@ -11,6 +11,13 @@ export default defineNuxtConfig({
   alias: {
     "@pintora-shared/": fileURLToPath(new URL('../pintora-shared/', import.meta.url)),
   },
+  app: {
+    head: {
+      bodyAttrs: {
+        class: 'bg-gray-900',
+      },
+    },
+  },
   nitro: {
     moduleSideEffects: ['svgicons2svgfont'],
     externals: {
